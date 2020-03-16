@@ -99,7 +99,7 @@ Tableau LireTableau(const char *nom)
     return A;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
     /*TEST 1*/
     int ligne = 5, colonne = 3;
@@ -110,6 +110,16 @@ int main()
     /*TEST 2*/
     const char *nom = "exemple1.txt";
     A = LireTableau(nom);
+    AfficheTableau(A);
+
+    /*TEST 3*/
+    const char *nom_de_fichier = argv[1];
+    char *algo = argv[2];
+    int duree = atoi(argv[3]);
+    printf("%s\n", nom_de_fichier);
+    printf("%s\n", algo);
+    printf("%d\n", duree);
+    A = LireTableau(nom_de_fichier);
     AfficheTableau(A);
 
     libere_memoire(A);
