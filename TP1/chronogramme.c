@@ -69,11 +69,49 @@ void AfficheTableau(Tableau A)
     printf("--------------------------------------------------------\n");
 }
 
+Tableau LireTableau(const char *nom)
+{
+    Tableau A;
+
+    int a, b, c;
+    int ligne, colonne = 3, k = 0;
+    FILE *fichier = NULL;
+    fichier = fopen(nom, "r"); /*ouvre le fichier en lecture*/
+    if (fichier == NULL)
+    {
+        printf("\nLe ficher n'a pas pu être ouvert. Fin du programme \n");
+        exit(0);
+    }
+    if (fichier != NULL)
+    {
+        fscanf(fichier, "%d", &ligne);
+        A = TableauVide(ligne, colonne);
+        while (fscanf(fichier, "%d %d %d", &a, &b, &c) != EOF)
+        { /*tant que le fichier n'est pas vide*/
+            A->Matrice[k][0] = a;
+            A->Matrice[k][1] = b;
+            A->Matrice[k][2] = c;
+            k++;
+        }
+    }
+    fclose(fichier); /*ferme le fichier*/
+
+    return A;
+}
+
 int main()
 {
+    /*TEST 1*/
     int ligne = 5, colonne = 3;
     Tableau A;
     A = TableauVide(ligne, colonne);
     AfficheTableau(A);
+
+    /*TEST 2*/
+    const char *nom = "exemple1.txt";
+    A = LireTableau(nom);
+    AfficheTableau(A);
+
+    libere_memoire(A);
     return 0;
 }
