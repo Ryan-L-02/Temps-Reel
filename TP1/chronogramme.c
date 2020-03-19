@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "sorted_job_list.h"
 
 typedef struct Tab *Tableau;
 
@@ -143,7 +144,30 @@ void FP(int duree, Tableau A)
             }
         }
     }
+    printf("\n");
+}
 
+void EDF(int duree, Tableau A)
+{
+    int i, t, nb_de_taches = A->nb_de_lignes;
+    SortedJobList list = create_empty_list();
+
+    for (i = 0; i < nb_de_taches; i++)
+    {
+        add_job(&list, /*Numéro de tâche*/ (i + 1), A->Matrice[i][0], A->Matrice[i][1]);
+    }
+    for (t = 1; t <= duree; t++)
+    {
+        printf("%d ", schedule_first(&list));
+        for (i = 0; i < nb_de_taches; i++)
+        {
+            if (t == (int)ceil((t / A->Matrice[i][2]) * A->Matrice[i][2]))
+            {
+                add_job(&list, /*Numéro de tâche*/ (i + 1), A->Matrice[i][0], A->Matrice[i][1] + (t - 1));
+            }
+        }
+    }
+    free_list(&list);
     printf("\n");
 }
 
@@ -153,11 +177,18 @@ int main(int argc, char *argv[])
     const char *nom_de_fichier = argv[1];
     int duree = atoi(argv[3]);
 
-    if (strcmp(argv[2], "FP") == 0)
+    if ((strcmp(argv[2], "FP") == 0) || (strcmp(argv[2], "fp") == 0))
     {
         A = LireTableau(nom_de_fichier);
         AfficheTableau(A);
         FP(duree, A);
+        libere_memoire(A);
+    }
+    if ((strcmp(argv[2], "EDF") == 0) || (strcmp(argv[2], "edf") == 0))
+    {
+        A = LireTableau(nom_de_fichier);
+        AfficheTableau(A);
+        EDF(duree, A);
         libere_memoire(A);
     }
     else
