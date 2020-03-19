@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <math.h>
 
 typedef struct Tab *Tableau;
 
@@ -99,29 +101,70 @@ Tableau LireTableau(const char *nom)
     return A;
 }
 
+void FP(int duree, Tableau A)
+{
+    int i, j, k, comp, nb_de_taches = A->nb_de_lignes;
+    int tab[nb_de_taches];
+
+    for (i = 0; i < nb_de_taches; i++)
+    {
+        /*printf("\n");*/
+        tab[i] = A->Matrice[i][0];
+    }
+    for (j = 1; j <= duree; j++)
+    {
+        k = -1;
+        for (i = 0; i < nb_de_taches; i++)
+        {
+            if (A->Matrice[i][0] > 0)
+            {
+                k = i;
+                break;
+            }
+        }
+        if (k != -1)
+        {
+            printf("%d ", k + 1);
+            A->Matrice[k][0]--;
+        }
+        else
+        {
+            printf("0 ");
+        }
+        for (i = 0; i < nb_de_taches; i++)
+        {
+            comp = (int)ceil((j / A->Matrice[i][2]) * A->Matrice[i][2]);
+            if (j == comp)
+            {
+                if (A->Matrice[i][0] == 0 || j == 0)
+                {
+                    A->Matrice[i][0] += tab[i];
+                }
+            }
+        }
+    }
+
+    printf("\n");
+}
+
 int main(int argc, char *argv[])
 {
-    /*TEST 1*/
-    int ligne = 5, colonne = 3;
     Tableau A;
-    A = TableauVide(ligne, colonne);
-    AfficheTableau(A);
-
-    /*TEST 2*/
-    const char *nom = "exemple1.txt";
-    A = LireTableau(nom);
-    AfficheTableau(A);
-
-    /*TEST 3*/
     const char *nom_de_fichier = argv[1];
-    char *algo = argv[2];
     int duree = atoi(argv[3]);
-    printf("%s\n", nom_de_fichier);
-    printf("%s\n", algo);
-    printf("%d\n", duree);
-    A = LireTableau(nom_de_fichier);
-    AfficheTableau(A);
 
-    libere_memoire(A);
+    if (strcmp(argv[2], "FP") == 0)
+    {
+        A = LireTableau(nom_de_fichier);
+        AfficheTableau(A);
+        FP(duree, A);
+        libere_memoire(A);
+    }
+    else
+    {
+        printf("Vous n'avez pas choisi le bon algorithme.\n");
+        exit(10);
+    }
+
     return 0;
 }
