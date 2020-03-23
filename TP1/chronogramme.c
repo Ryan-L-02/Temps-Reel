@@ -6,13 +6,15 @@
 
 typedef struct Tab *Tableau;
 
+/*Structure pour notre Matrice*/
 struct Tab
 {
-    int nb_de_lignes;
+    int nb_de_lignes; /*Nombre de tâche*/
     int nb_de_colonnes;
     int **Matrice;
 };
 
+/*Allocation de l'espace mémoire pour notre Matrice*/
 void init_tableau(Tableau A)
 {
     int **tab = (int **)malloc(sizeof(int *) * A->nb_de_lignes);
@@ -39,6 +41,7 @@ void init_tableau(Tableau A)
     A->Matrice = tab;
 }
 
+/*On libére la mémoire qui a été alloué par notre fonction init_tableau()*/
 void libere_memoire(Tableau A)
 {
     int i;
@@ -48,6 +51,7 @@ void libere_memoire(Tableau A)
     free(A);
 }
 
+/*Cette fonction permet de créer une matrice vide avec le nombre de ligne/colonne souhaité*/
 Tableau TableauVide(int n, int m)
 {
     Tableau A = malloc(sizeof(A));
@@ -57,6 +61,7 @@ Tableau TableauVide(int n, int m)
     return A;
 }
 
+/*Permet d'afficher le contenu de notre Matrice*/
 void AfficheTableau(Tableau A)
 {
     int a, b;
@@ -72,6 +77,7 @@ void AfficheTableau(Tableau A)
     printf("--------------------------------------------------------\n");
 }
 
+/*Permet de lire le contenu d'un fichier et de l'enregistrer dans une matrice*/
 Tableau LireTableau(const char *nom)
 {
     Tableau A;
@@ -87,13 +93,13 @@ Tableau LireTableau(const char *nom)
     }
     if (fichier != NULL)
     {
-        fscanf(fichier, "%d", &ligne);
+        fscanf(fichier, "%d", &ligne); /*On récupère le nombre de ligne de notre matrice grâce à la première ligne de notre fichier*/
         A = TableauVide(ligne, colonne);
         while (fscanf(fichier, "%d %d %d", &a, &b, &c) != EOF)
         { /*tant que le fichier n'est pas vide*/
-            A->Matrice[k][0] = a;
-            A->Matrice[k][1] = b;
-            A->Matrice[k][2] = c;
+            A->Matrice[k][0] = a; /*Durée d'exécution pire cas*/
+            A->Matrice[k][1] = b; /*Echéance relative*/
+            A->Matrice[k][2] = c; /*Période*/
             k++;
         }
     }
@@ -102,9 +108,10 @@ Tableau LireTableau(const char *nom)
     return A;
 }
 
+/*Algorithme FP (Priorité Fixe)*/
 void FP(int duree, Tableau A)
 {
-    int i, j, k, comp, nb_de_taches = A->nb_de_lignes;
+    int i, j, k, comp, nb_de_taches = A->nb_de_lignes; /*Le nombre de tâche correspond au nombre de ligne*/
     int tab[nb_de_taches];
 
     for (i = 0; i < nb_de_taches; i++)
@@ -147,23 +154,24 @@ void FP(int duree, Tableau A)
     printf("\n");
 }
 
+/*Algorithme EDF (Priorité Dynamique)*/
 void EDF(int duree, Tableau A)
 {
-    int i, t, nb_de_taches = A->nb_de_lignes;
+    int i, j, nb_de_taches = A->nb_de_lignes; /*Le nombre de tâche correspond au nombre de ligne*/
     SortedJobList list = create_empty_list();
 
     for (i = 0; i < nb_de_taches; i++)
     {
         add_job(&list, /*Numéro de tâche*/ (i + 1), A->Matrice[i][0], A->Matrice[i][1]);
     }
-    for (t = 1; t <= duree; t++)
+    for (j = 1; j <= duree; j++)
     {
         printf("%d ", schedule_first(&list));
         for (i = 0; i < nb_de_taches; i++)
         {
-            if (t == (int)ceil((t / A->Matrice[i][2]) * A->Matrice[i][2]))
+            if (j == (int)ceil((j / A->Matrice[i][2]) * A->Matrice[i][2]))
             {
-                add_job(&list, /*Numéro de tâche*/ (i + 1), A->Matrice[i][0], A->Matrice[i][1] + (t - 1));
+                add_job(&list, /*Numéro de tâche*/ (i + 1), A->Matrice[i][0], A->Matrice[i][1] + (j - 1));
             }
         }
     }
