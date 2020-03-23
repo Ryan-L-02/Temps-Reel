@@ -95,7 +95,7 @@ Taskset LireTaskset(const char *nom)
         fscanf(fichier, "%d", &ligne); /*On récupère le nombre de ligne de notre matrice grâce à la première ligne de notre fichier*/
         A = TasksetVide(ligne, colonne);
         while (fscanf(fichier, "%d %d %d", &a, &b, &c) != EOF)
-        { /*tant que le fichier n'est pas vide*/
+        {                         /*tant que le fichier n'est pas vide*/
             A->Matrice[k][0] = a; /*Durée d'exécution pire cas*/
             A->Matrice[k][1] = b; /*Echéance relative*/
             A->Matrice[k][2] = c; /*Période*/
@@ -107,10 +107,52 @@ Taskset LireTaskset(const char *nom)
     return A;
 }
 
+int test_load(Taskset A)
+{
+    /*
+   A->Matrice[i][0] = Ci
+   A->Matrice[i][1] = Di
+   A->Matrice[i][2] = Ti
+   */
+
+    int i;
+    double charge;
+    double nb_de_taches = A->nb_de_lignes;                              /*On converti le nombre de tâche en double*/
+    double borne = nb_de_taches * (pow(2.0, 1.0 / nb_de_taches) - 1.0); /*Borne = n(2^(1/n)-1)*/
+
+    for (i = 1; i < A->nb_de_lignes; i++)
+    {
+        charge = charge + (A->Matrice[i][0] / A->Matrice[i][2]); /*Charge = SOMME de (Ci/Ti)*/
+
+        if (A->Matrice[i][1] > A->Matrice[i][2])
+        {
+            printf("On a Di > Ti.\n");
+            return 10;
+        }
+    }
+    if (charge <= borne)
+    {
+        return 1;
+    }
+    else if (charge < 1.0 && charge > borne)
+    {
+        return 0;
+    }
+    else
+        return -1;
+}
+
 int main(int argc, char *argv[])
 {
-    /*Taskset A;
-    const char *nom_de_fichier = argv[1];*/
+    Taskset A;
+    int echeance;
+    const char *nom_de_fichier = argv[1];
 
+    A = LireTaskset(nom_de_fichier);
+    AfficheTaskset(A);
+    echeance = test_load(A);
+    printf("Echéance = %d\n", echeance);
+
+    libere_memoire(A);
     return 0;
 }
