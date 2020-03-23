@@ -116,7 +116,7 @@ int test_load(Taskset A)
    */
 
     int i;
-    double charge;
+    double charge = 0.0;
     double nb_de_taches = A->nb_de_lignes;                              /*On converti le nombre de tâche en double*/
     double borne = nb_de_taches * (pow(2.0, 1.0 / nb_de_taches) - 1.0); /*Borne = n(2^(1/n)-1)*/
 
