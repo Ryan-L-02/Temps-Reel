@@ -12,6 +12,11 @@ struct Tab
     int nb_de_lignes; /*Nombre de tâche*/
     int nb_de_colonnes;
     int **Matrice;
+    /*
+   A->Matrice[i][0] = Ci
+   A->Matrice[i][1] = Di
+   A->Matrice[i][2] = Ti
+   */
 };
 
 /*Allocation de l'espace mémoire pour notre Matrice*/
@@ -96,7 +101,7 @@ Tableau LireTableau(const char *nom)
         fscanf(fichier, "%d", &ligne); /*On récupère le nombre de ligne de notre matrice grâce à la première ligne de notre fichier*/
         A = TableauVide(ligne, colonne);
         while (fscanf(fichier, "%d %d %d", &a, &b, &c) != EOF)
-        { /*tant que le fichier n'est pas vide*/
+        {                         /*tant que le fichier n'est pas vide*/
             A->Matrice[k][0] = a; /*Durée d'exécution pire cas*/
             A->Matrice[k][1] = b; /*Echéance relative*/
             A->Matrice[k][2] = c; /*Période*/
@@ -111,6 +116,12 @@ Tableau LireTableau(const char *nom)
 /*Algorithme FP (Priorité Fixe)*/
 void FP(int duree, Tableau A)
 {
+    /*
+   A->Matrice[i][0] = Ci
+   A->Matrice[i][1] = Di
+   A->Matrice[i][2] = Ti
+   */
+
     int i, j, k, comp, nb_de_taches = A->nb_de_lignes; /*Le nombre de tâche correspond au nombre de ligne*/
     int tab[nb_de_taches];
 
@@ -157,6 +168,12 @@ void FP(int duree, Tableau A)
 /*Algorithme EDF (Priorité Dynamique)*/
 void EDF(int duree, Tableau A)
 {
+    /*
+   A->Matrice[i][0] = Ci
+   A->Matrice[i][1] = Di
+   A->Matrice[i][2] = Ti
+   */
+
     int i, j, nb_de_taches = A->nb_de_lignes; /*Le nombre de tâche correspond au nombre de ligne*/
     SortedJobList list = create_empty_list();
 
