@@ -4,7 +4,7 @@
 #include <math.h>
 #include "sorted_job_list.h"
 
-typedef struct Tab *Tableau;
+typedef struct Tab *Taskset;
 
 /*Structure pour notre Matrice*/
 struct Tab
@@ -20,7 +20,7 @@ struct Tab
 };
 
 /*Allocation de l'espace mémoire pour notre Matrice*/
-void init_tableau(Tableau A)
+void init_tableau(Taskset A)
 {
     int **tab = (int **)malloc(sizeof(int *) * A->nb_de_lignes);
     int i, j;
@@ -47,7 +47,7 @@ void init_tableau(Tableau A)
 }
 
 /*On libére la mémoire qui a été alloué par notre fonction init_tableau()*/
-void libere_memoire(Tableau A)
+void libere_memoire(Taskset A)
 {
     int i;
     for (i = 0; i < A->nb_de_lignes; i++)
@@ -57,9 +57,9 @@ void libere_memoire(Tableau A)
 }
 
 /*Cette fonction permet de créer une matrice vide avec le nombre de ligne/colonne souhaité*/
-Tableau TableauVide(int n, int m)
+Taskset TableauVide(int n, int m)
 {
-    Tableau A = malloc(sizeof(A));
+    Taskset A = malloc(sizeof(A));
     A->nb_de_lignes = n;
     A->nb_de_colonnes = m;
     init_tableau(A);
@@ -67,7 +67,7 @@ Tableau TableauVide(int n, int m)
 }
 
 /*Permet d'afficher le contenu de notre Matrice*/
-void AfficheTableau(Tableau A)
+void AfficheTableau(Taskset A)
 {
     int a, b;
     printf("\n--------------------------------------------------------\n");
@@ -83,9 +83,9 @@ void AfficheTableau(Tableau A)
 }
 
 /*Permet de lire le contenu d'un fichier et de l'enregistrer dans une matrice*/
-Tableau LireTableau(const char *nom)
+Taskset LireTableau(const char *nom)
 {
-    Tableau A;
+    Taskset A;
 
     int a, b, c;
     int ligne, colonne = 3, k = 0;
@@ -114,7 +114,7 @@ Tableau LireTableau(const char *nom)
 }
 
 /*Algorithme FP (Priorité Fixe)*/
-void FP(int duree, Tableau A)
+void FP(int duree, Taskset A)
 {
     /*
    A->Matrice[i][0] = Ci
@@ -166,7 +166,7 @@ void FP(int duree, Tableau A)
 }
 
 /*Algorithme EDF (Priorité Dynamique)*/
-void EDF(int duree, Tableau A)
+void EDF(int duree, Taskset A)
 {
     /*
    A->Matrice[i][0] = Ci
@@ -198,7 +198,7 @@ void EDF(int duree, Tableau A)
 
 int main(int argc, char *argv[])
 {
-    Tableau A;
+    Taskset A;
     const char *nom_de_fichier = argv[1];
     int duree = atoi(argv[3]);
 
