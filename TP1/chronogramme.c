@@ -102,9 +102,9 @@ Tableau LireTableau(const char *nom)
         A = TableauVide(ligne, colonne);
         while (fscanf(fichier, "%d %d %d", &a, &b, &c) != EOF)
         {                         /*tant que le fichier n'est pas vide*/
-            A->Matrice[k][0] = a; /*Durée d'exécution pire cas*/
-            A->Matrice[k][1] = b; /*Echéance relative*/
-            A->Matrice[k][2] = c; /*Période*/
+            A->Matrice[k][0] = a; /*Durée d'exécution pire cas - Ci*/
+            A->Matrice[k][1] = b; /*Echéance relative - Di*/
+            A->Matrice[k][2] = c; /*Période - Ti*/
             k++;
         }
     }
@@ -128,14 +128,14 @@ void FP(int duree, Tableau A)
     for (i = 0; i < nb_de_taches; i++)
     {
         /*printf("\n");*/
-        tab[i] = A->Matrice[i][0];
+        tab[i] = A->Matrice[i][0]; /*Ci*/
     }
     for (j = 1; j <= duree; j++)
     {
         k = -1;
         for (i = 0; i < nb_de_taches; i++)
         {
-            if (A->Matrice[i][0] > 0)
+            if (A->Matrice[i][0] /*Ci*/ > 0)
             {
                 k = i;
                 break;
@@ -144,7 +144,7 @@ void FP(int duree, Tableau A)
         if (k != -1)
         {
             printf("%d ", k + 1);
-            A->Matrice[k][0]--;
+            A->Matrice[k][0] /*Ci*/--;
         }
         else
         {
@@ -152,12 +152,12 @@ void FP(int duree, Tableau A)
         }
         for (i = 0; i < nb_de_taches; i++)
         {
-            comp = (int)ceil((j / A->Matrice[i][2]) * A->Matrice[i][2]);
+            comp = (int)ceil((j / A->Matrice[i][2]) * A->Matrice[i][2]); /* (j/Ti)*Ti */
             if (j == comp)
             {
-                if (A->Matrice[i][0] == 0 || j == 0)
+                if (A->Matrice[i][0] /*Ci*/ == 0 || j == 0)
                 {
-                    A->Matrice[i][0] += tab[i];
+                    A->Matrice[i][0] /*Ci*/ += tab[i];
                 }
             }
         }
@@ -179,7 +179,7 @@ void EDF(int duree, Tableau A)
 
     for (i = 0; i < nb_de_taches; i++)
     {
-        add_job(&list, /*Numéro de tâche*/ (i + 1), A->Matrice[i][0], A->Matrice[i][1]);
+        add_job(&list, (i + 1) /*Numéro de tâche*/, A->Matrice[i][0] /*Ci*/, A->Matrice[i][1] /*Di*/);
     }
     for (j = 1; j <= duree; j++)
     {
@@ -188,7 +188,7 @@ void EDF(int duree, Tableau A)
         {
             if (j == (int)ceil((j / A->Matrice[i][2]) * A->Matrice[i][2]))
             {
-                add_job(&list, /*Numéro de tâche*/ (i + 1), A->Matrice[i][0], A->Matrice[i][1] + (j - 1));
+                add_job(&list, (i + 1) /*Numéro de tâche*/, A->Matrice[i][0] /*Ci*/, A->Matrice[i][1] /*Di*/ + (j - 1));
             }
         }
     }

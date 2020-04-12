@@ -11,6 +11,11 @@ struct Tab
     int nb_de_lignes; /*Nombre de tâche*/
     int nb_de_colonnes;
     int **Matrice;
+    /*
+    A->Matrice[i][0] = Ci
+    A->Matrice[i][1] = Di
+    A->Matrice[i][2] = Ti
+    */
 };
 
 /*Allocation de l'espace mémoire pour notre Matrice*/
@@ -96,9 +101,9 @@ Taskset LireTaskset(const char *nom)
         A = TasksetVide(ligne, colonne);
         while (fscanf(fichier, "%d %d %d", &a, &b, &c) != EOF)
         {                         /*tant que le fichier n'est pas vide*/
-            A->Matrice[k][0] = a; /*Durée d'exécution pire cas*/
-            A->Matrice[k][1] = b; /*Echéance relative*/
-            A->Matrice[k][2] = c; /*Période*/
+            A->Matrice[k][0] = a; /*Durée d'exécution pire cas - Ci*/
+            A->Matrice[k][1] = b; /*Echéance relative - Di*/
+            A->Matrice[k][2] = c; /*Période - Ti*/
             k++;
         }
     }
@@ -124,7 +129,7 @@ int test_load(Taskset A)
     {
         charge = charge + (A->Matrice[i][0] / A->Matrice[i][2]); /*Charge = SOMME de (Ci/Ti)*/
 
-        if (A->Matrice[i][1] > A->Matrice[i][2])
+        if (A->Matrice[i][1] > A->Matrice[i][2]) /*Di>Ti*/
         {
             printf("On a Di > Ti.\n");
             return 10;
@@ -144,16 +149,23 @@ int test_load(Taskset A)
 
 int weight(Taskset A, int i, int t)
 {
+    /*
+    A->Matrice[i][0] = Ci
+    A->Matrice[i][1] = Di
+    A->Matrice[i][2] = Ti
+    */
+
     int n, w = 0;
 
     for (n = 0; n < i; n++)
     {
-        w = w + (int)(ceil(t / A->Matrice[n][2])) * A->Matrice[n][0];
+        w = w + (int)(ceil(t / A->Matrice[n][2])) * A->Matrice[n][0]; /* (t/Ti)*Ci */
     }
 
     return w;
 }
 
+/*Renvoie la busy period de la tâche i*/
 int get_busy_period(Taskset A, int i)
 {
     int w, t = 1;
@@ -168,29 +180,42 @@ int get_busy_period(Taskset A, int i)
     return w;
 }
 
+/*Renvoie le nombre d’instance de la tâche i comprise dans la busy period*/
 int get_nb_critical_job(Taskset A, int i, int bp)
 {
-    return (int)floor(bp / A->Matrice[i][2]);
+    return (int)floor(bp / A->Matrice[i][2]); /* bp/Ti */
 }
 
+/*Renvoie le temps de réponse de l’instance k de la tâche i*/
 int get_response_time(Taskset A, int i, int k)
 {
+    /*
+    A->Matrice[i][0] = Ci
+    A->Matrice[i][1] = Di
+    A->Matrice[i][2] = Ti
+    */
 
     int response_time, j;
-    k = (1 + (int)floor(k / A->Matrice[i][2])) * A->Matrice[i][0];
+    k = (1 + (int)floor(k / A->Matrice[i][2])) * A->Matrice[i][0]; /* (k/Ti)*Ci */
     response_time = k;
 
     for (j = 0; j < i - 1; j++)
     {
-        response_time = response_time + (int)ceil(k / A->Matrice[j][2]) * A->Matrice[j][0];
+        response_time = response_time + (int)ceil(k / A->Matrice[j][2]) * A->Matrice[j][0]; /* (k/Ti)*Ci */
         k = response_time;
     }
 
     return response_time;
 }
 
+/*Renvoie le pire temps de réponse de la tâche i*/
 int get_worst_case_response_time(Taskset A, int i)
 {
+    /*
+    A->Matrice[i][0] = Ci
+    A->Matrice[i][1] = Di
+    A->Matrice[i][2] = Ti
+    */
 
     int j, busy, critical, worst = -1, response = -1;
     busy = get_busy_period(A, i);
@@ -201,7 +226,7 @@ int get_worst_case_response_time(Taskset A, int i)
         response = get_response_time(A, i, critical);
         response = response - critical;
 
-        if (response > A->Matrice[i][1])
+        if (response > A->Matrice[i][1]) /*response>Di*/
         {
             break;
         }
@@ -219,7 +244,7 @@ int main(int argc, char *argv[])
 {
     Taskset A;
     int echeance, busy, critical, response, worst;
-    int tache = 0;
+    int tache = 0; /*Correspond à la tâche 1*/
     const char *nom_de_fichier = argv[1];
 
     A = LireTaskset(nom_de_fichier);
