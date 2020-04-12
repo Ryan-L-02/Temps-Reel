@@ -142,16 +142,48 @@ int test_load(Taskset A)
         return -1;
 }
 
+int weight(Taskset A, int i, int t)
+{
+    int n, w = 0;
+
+    for (n = 0; n < i; n++)
+    {
+        w = w + (int)(ceil(t / A->Matrice[n][2])) * A->Matrice[n][0];
+    }
+
+    return w;
+}
+
+int get_busy_period(Taskset A, int i)
+{
+    int w, t = 1;
+    w = weight(A, i, t);
+
+    while (w != t)
+    {
+        t = w;
+        w = weight(A, i, t);
+    }
+
+    return w;
+}
+
 int main(int argc, char *argv[])
 {
     Taskset A;
-    int echeance;
+    int echeance, busy;
+    int tache = 1;
     const char *nom_de_fichier = argv[1];
 
     A = LireTaskset(nom_de_fichier);
+    printf("\nContenu du fichier :");
     AfficheTaskset(A);
+
     echeance = test_load(A);
-    printf("Echéance = %d\n", echeance);
+    printf("\ntest_load = %d\n", echeance);
+
+    busy = get_busy_period(A, tache);
+    printf("Tâche %d : get_busy_period = %d\n", tache, busy);
 
     libere_memoire(A);
     return 0;
