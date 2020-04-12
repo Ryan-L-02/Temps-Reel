@@ -57,7 +57,7 @@ void libere_memoire(Taskset A)
 }
 
 /*Cette fonction permet de créer une matrice vide avec le nombre de ligne/colonne souhaité*/
-Taskset TableauVide(int n, int m)
+Taskset TasksetVide(int n, int m)
 {
     Taskset A = malloc(sizeof(A));
     A->nb_de_lignes = n;
@@ -67,7 +67,7 @@ Taskset TableauVide(int n, int m)
 }
 
 /*Permet d'afficher le contenu de notre Matrice*/
-void AfficheTableau(Taskset A)
+void AfficheTaskset(Taskset A)
 {
     int a, b;
     printf("\n--------------------------------------------------------\n");
@@ -83,7 +83,7 @@ void AfficheTableau(Taskset A)
 }
 
 /*Permet de lire le contenu d'un fichier et de l'enregistrer dans une matrice*/
-Taskset LireTableau(const char *nom)
+Taskset LireTaskset(const char *nom)
 {
     Taskset A;
 
@@ -99,7 +99,7 @@ Taskset LireTableau(const char *nom)
     if (fichier != NULL)
     {
         fscanf(fichier, "%d", &ligne); /*On récupère le nombre de ligne de notre matrice grâce à la première ligne de notre fichier*/
-        A = TableauVide(ligne, colonne);
+        A = TasksetVide(ligne, colonne);
         while (fscanf(fichier, "%d %d %d", &a, &b, &c) != EOF)
         {                         /*tant que le fichier n'est pas vide*/
             A->Matrice[k][0] = a; /*Durée d'exécution pire cas - Ci*/
@@ -204,15 +204,15 @@ int main(int argc, char *argv[])
 
     if ((strcmp(argv[2], "FP") == 0) || (strcmp(argv[2], "fp") == 0))
     {
-        A = LireTableau(nom_de_fichier);
-        AfficheTableau(A);
+        A = LireTaskset(nom_de_fichier);
+        AfficheTaskset(A);
         FP(duree, A);
         libere_memoire(A);
     }
     if ((strcmp(argv[2], "EDF") == 0) || (strcmp(argv[2], "edf") == 0))
     {
-        A = LireTableau(nom_de_fichier);
-        AfficheTableau(A);
+        A = LireTaskset(nom_de_fichier);
+        AfficheTaskset(A);
         EDF(duree, A);
         libere_memoire(A);
     }
