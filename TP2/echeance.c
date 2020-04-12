@@ -170,14 +170,30 @@ int get_busy_period(Taskset A, int i)
 
 int get_nb_critical_job(Taskset A, int i, int bp)
 {
-    return (int)ceil(bp / A->Matrice[i][2]);
+    return (int)floor(bp / A->Matrice[i][2]);
+}
+
+int get_response_time(Taskset A, int i, int k)
+{
+
+    int response_time, j;
+    k = (1 + (int)floor(k / A->Matrice[i][2])) * A->Matrice[i][0];
+    response_time = k;
+
+    for (j = 0; j < i - 1; j++)
+    {
+        response_time = response_time + (int)ceil(k / A->Matrice[j][2]) * A->Matrice[j][0];
+        k = response_time;
+    }
+
+    return response_time;
 }
 
 int main(int argc, char *argv[])
 {
     Taskset A;
-    int echeance, busy, critical;
-    int tache = 1;
+    int echeance, busy, critical, response;
+    int tache = 0;
     const char *nom_de_fichier = argv[1];
 
     A = LireTaskset(nom_de_fichier);
@@ -188,10 +204,13 @@ int main(int argc, char *argv[])
     printf("\ntest_load = %d\n", echeance);
 
     busy = get_busy_period(A, tache);
-    printf("Tâche %d : get_busy_period = %d\n", tache, busy);
+    printf("Tâche %d : get_busy_period = %d\n", tache + 1, busy);
 
     critical = get_nb_critical_job(A, tache, busy);
-    printf("Tâche %d : get_nb_critical_job = %d\n", tache, critical);
+    printf("Tâche %d : get_nb_critical_job = %d\n", tache + 1, critical);
+
+    response = get_response_time(A, tache, 1);
+    printf("Tâche %d : get_response_time = %d\n", tache + 1, response);
 
     libere_memoire(A);
     return 0;
