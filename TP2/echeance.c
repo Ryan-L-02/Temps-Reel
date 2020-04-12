@@ -168,10 +168,15 @@ int get_busy_period(Taskset A, int i)
     return w;
 }
 
+int get_nb_critical_job(Taskset A, int i, int bp)
+{
+    return (int)ceil(bp / A->Matrice[i][2]);
+}
+
 int main(int argc, char *argv[])
 {
     Taskset A;
-    int echeance, busy;
+    int echeance, busy, critical;
     int tache = 1;
     const char *nom_de_fichier = argv[1];
 
@@ -184,6 +189,9 @@ int main(int argc, char *argv[])
 
     busy = get_busy_period(A, tache);
     printf("Tâche %d : get_busy_period = %d\n", tache, busy);
+
+    critical = get_nb_critical_job(A, tache, busy);
+    printf("Tâche %d : get_nb_critical_job = %d\n", tache, critical);
 
     libere_memoire(A);
     return 0;
