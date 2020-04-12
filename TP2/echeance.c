@@ -189,10 +189,36 @@ int get_response_time(Taskset A, int i, int k)
     return response_time;
 }
 
+int get_worst_case_response_time(Taskset A, int i)
+{
+
+    int j, busy, critical, worst = -1, response = -1;
+    busy = get_busy_period(A, i);
+    critical = get_nb_critical_job(A, i, busy);
+
+    for (j = 0; j < critical; j++)
+    {
+        response = get_response_time(A, i, critical);
+        response = response - critical;
+
+        if (response > A->Matrice[i][1])
+        {
+            break;
+        }
+
+        if (response >= worst)
+        {
+            worst = response;
+        }
+    }
+
+    return worst;
+}
+
 int main(int argc, char *argv[])
 {
     Taskset A;
-    int echeance, busy, critical, response;
+    int echeance, busy, critical, response, worst;
     int tache = 0;
     const char *nom_de_fichier = argv[1];
 
@@ -211,6 +237,9 @@ int main(int argc, char *argv[])
 
     response = get_response_time(A, tache, 1);
     printf("Tâche %d : get_response_time = %d\n", tache + 1, response);
+
+    worst = get_worst_case_response_time(A, tache);
+    printf("Tâche %d : get_worst_case_response_time = %d\n", tache + 1, worst);
 
     libere_memoire(A);
     return 0;
